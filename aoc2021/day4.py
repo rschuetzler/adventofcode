@@ -25,12 +25,13 @@ def play_number(call, cards):
         cards[idx] = np.where(card == call, 0, card)
 
 def check_winners(cards):
+    winners = []
     for idx, card in enumerate(cards):
         if 0 in card.sum(axis=0) or 0 in card.sum(axis=1):
-            return idx
-    return None
+            winners.append(idx)
+    return winners
 
-def calculate_winner_score(call, card):
+def calculate_card_score(call, card):
     print(card)
     return call * card.sum()
 
@@ -39,9 +40,18 @@ def play_game(path):
     calls, cards = process_input(path)
     for call in calls:
         play_number(call, cards)
-        winner = check_winners(cards)
-        if winner is not None:
-            print(calculate_winner_score(call, cards[winner]))
+        winners = check_winners(cards)
+
+        if len(winners) == len(cards) - 1:
+            loser = None
+            for i in range(len(cards)):
+                if i not in winners:
+                    loser = i
+                    cards = [cards.pop(i)]
+                    print(cards[0])
+                    break
+        if len(winners) == 1 and len(cards) == 1:
+            print(calculate_card_score(call, cards[0]))
             break
 
 
